@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install API dependencies
+        working-directory: apps/api
+        run: npm install
+
+      - name: Install UI dependencies
+        working-directory: apps/ui
+        run: npm install
+
+      - name: Install automation dependencies
+        working-directory: automation
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: automation
+        run: npx playwright install --with-deps
+
+      - name: Install wait-on
+        run: npm install -g wait-on
+
+      - name: Start API
+        working-directory: apps/api
+        run: npm run dev &
+
+      - name: Start UI
+        working-directory: apps/ui
+        run: npm run dev -- --host 0.0.0.0 &
+
+      - name: Wait for UI
+        run: wait-on http://127.0.0.1:5173
+
+      - name: Run Playwright tests
+        working-directory: automation
+        run: npm test

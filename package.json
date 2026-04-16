@@ -1,0 +1,15 @@
+{
+  "name": "rem-waste-booking-assessment",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/ui",
+    "apps/api",
+    "automation"
+  ],
+  "scripts": {
+    "dev:ui": "npm --workspace apps/ui run dev",
+    "dev:api": "npm --workspace apps/api run dev",
+    "test:e2e": "npm --workspace automation run test"
+  }
+}
