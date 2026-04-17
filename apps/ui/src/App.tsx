@@ -24,6 +24,10 @@ export default function App() {
   const [step, setStep] = useState(1);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
+  const [selectedWasteButton, setSelectedWasteButton] = useState("");
+  const [selectedPlasterboardButton, setSelectedPlasterboardButton] =
+    useState("");
+
   const [wasteType, setWasteType] = useState("");
   const [plasterboardOption, setPlasterboardOption] = useState("");
 
@@ -41,6 +45,66 @@ export default function App() {
     Record<string, Address[]>
   >({});
 
+  const primaryButtonStyle = (selected: boolean) => ({
+    padding: "14px 20px",
+    borderRadius: "10px",
+    border: selected ? "2px solid #333" : "1px solid #ccc",
+    background: selected ? "#d9d9d9" : "#f3f3f3",
+    cursor: "pointer",
+    minWidth: "160px",
+    fontSize: "16px",
+    transition: "all 0.15s ease",
+  });
+
+  const secondaryButtonStyle = {
+    padding: "12px 16px",
+    borderRadius: "10px",
+    border: "1px solid #d0d7de",
+    background: "#fff",
+    cursor: "pointer",
+    fontSize: "15px",
+    color: "#1f2937",
+  };
+
+  const inputRowStyle = {
+    display: "flex",
+    gap: "14px",
+    marginBottom: "20px",
+    alignItems: "center" as const,
+    flexWrap: "wrap" as const,
+  };
+
+  const postcodeInputStyle = {
+    flex: "1 1 320px",
+    minWidth: "280px",
+    padding: "14px 16px",
+    borderRadius: "10px",
+    border: "1px solid #d6d6d6",
+    background: "#fff",
+    outline: "none",
+    fontSize: "16px",
+  };
+
+  const lookupButtonStyle = {
+    padding: "14px 20px",
+    borderRadius: "10px",
+    border: "1px solid #d0d7e2",
+    background: "#f3f4f6",
+    color: "#111827",
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "all 0.15s ease",
+    minWidth: "96px",
+  };
+
+  const reviewBoxStyle = {
+    marginTop: "24px",
+    padding: "18px",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    background: "#fafafa",
+  };
+
   async function handleLookup() {
     const normalizedPostcode = postcode.trim().toUpperCase();
 
@@ -55,6 +119,8 @@ export default function App() {
     setSelectedSkip(null);
     setWasteType("");
     setPlasterboardOption("");
+    setSelectedWasteButton("");
+    setSelectedPlasterboardButton("");
 
     try {
       const res = await fetch("http://localhost:3001/api/postcode/lookup", {
@@ -70,8 +136,7 @@ export default function App() {
       const data = await res.json();
 
       const apiAddresses = data.addresses || [];
-      const savedManual =
-        manualAddressesByPostcode[normalizedPostcode] || [];
+      const savedManual = manualAddressesByPostcode[normalizedPostcode] || [];
 
       setAddresses([...apiAddresses, ...savedManual]);
       setSubmitted(true);
@@ -101,7 +166,7 @@ export default function App() {
     const pc = postcodeValue.replace(/\s+/g, "").toUpperCase();
 
     const res = await fetch(
-      `http://localhost:3001/api/skips?postcode=${pc}&heavyWaste=${heavyWaste}`
+      `http://localhost:3001/api/skips?postcode=${pc}&heavyWaste=${heavyWaste}`,
     );
 
     const data = await res.json();
@@ -155,13 +220,23 @@ export default function App() {
         <div className="card">
           <h1>REM Waste Booking Flow</h1>
 
-          <div style={{ display: "flex", gap: "12px", marginBottom: "16px" }}>
+          <div style={inputRowStyle}>
             <input
+              style={postcodeInputStyle}
               value={postcode}
               onChange={(e) => setPostcode(e.target.value)}
               placeholder="Enter postcode"
             />
-            <button onClick={handleLookup} disabled={loading}>
+
+            <button
+              style={{
+                ...lookupButtonStyle,
+                opacity: loading ? 0.6 : 1,
+                cursor: loading ? "not-allowed" : "pointer",
+              }}
+              onClick={handleLookup}
+              disabled={loading}
+            >
               Lookup
             </button>
           </div>
@@ -169,9 +244,38 @@ export default function App() {
           {loading && <p>Loading addresses...</p>}
 
           {error && (
-            <div style={{ marginBottom: "16px" }}>
-              <p>{error}</p>
-              <button onClick={handleLookup}>Retry</button>
+            <div
+              style={{
+                marginBottom: "16px",
+                padding: "12px",
+                border: "1px solid #f1c1c0",
+                background: "#fff5f5",
+                borderRadius: "8px",
+              }}
+            >
+              <p
+                style={{
+                  color: "#c62828",
+                  marginBottom: "10px",
+                  fontWeight: 500,
+                }}
+              >
+                {error}
+              </p>
+
+              <button
+                onClick={handleLookup}
+                style={{
+                  background: "#f3f3f3",
+                  color: "#333",
+                  border: "1px solid #ccc",
+                  padding: "8px 14px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Retry
+              </button>
             </div>
           )}
 
@@ -219,7 +323,17 @@ export default function App() {
                     setManualLine1("");
                     setManualCity("");
                   }}
-                  disabled={!manualLine1 || !manualCity}
+                  disabled={
+                    manualLine1.trim().length < 3 ||
+                    manualCity.trim().length < 2
+                  }
+                  style={{
+                    opacity:
+                      manualLine1.trim().length < 3 ||
+                      manualCity.trim().length < 2
+                        ? 0.5
+                        : 1,
+                  }}
                 >
                   Add address
                 </button>
@@ -238,6 +352,8 @@ export default function App() {
                     setPlasterboardOption("");
                     setBookingSuccess(false);
                     setBookingId("");
+                    setSelectedWasteButton("");
+                    setSelectedPlasterboardButton("");
                     setStep(2);
                   }}
                   style={{
@@ -245,6 +361,10 @@ export default function App() {
                     width: "100%",
                     textAlign: "left",
                     padding: "12px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    background: "#fff",
+                    cursor: "pointer",
                   }}
                 >
                   {a.line1}, {a.city}
@@ -258,53 +378,77 @@ export default function App() {
       {/* STEP 2 */}
       {step === 2 && (
         <div className="card">
-          <h2>Select Waste Type</h2>
+          <h2 style={{ fontSize: "22px", marginTop: 0, marginBottom: "18px" }}>
+            Select Waste Type
+          </h2>
 
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "14px",
+              flexWrap: "wrap",
+              marginBottom: "18px",
+            }}
+          >
             <button
-              onClick={async () => {
-                setWasteType("general");
-                setPlasterboardOption("");
-                setSelectedSkip(null);
-                setBookingSuccess(false);
+              style={primaryButtonStyle(selectedWasteButton === "General")}
+              onClick={() => {
+                setSelectedWasteButton("General");
 
-                await postWasteType({
-                  heavyWaste: false,
-                  plasterboard: false,
-                  plasterboardOption: null,
-                });
+                setTimeout(async () => {
+                  setWasteType("general");
+                  setPlasterboardOption("");
+                  setSelectedPlasterboardButton("");
+                  setSelectedSkip(null);
+                  setBookingSuccess(false);
 
-                await fetchSkips(postcode, false);
-                setStep(3);
+                  await postWasteType({
+                    heavyWaste: false,
+                    plasterboard: false,
+                    plasterboardOption: null,
+                  });
+
+                  await fetchSkips(postcode, false);
+                  setStep(3);
+                }, 120);
               }}
             >
               General
             </button>
 
             <button
-              onClick={async () => {
-                setWasteType("heavy");
-                setPlasterboardOption("");
-                setSelectedSkip(null);
-                setBookingSuccess(false);
+              style={primaryButtonStyle(selectedWasteButton === "Heavy")}
+              onClick={() => {
+                setSelectedWasteButton("Heavy");
 
-                await postWasteType({
-                  heavyWaste: true,
-                  plasterboard: false,
-                  plasterboardOption: null,
-                });
+                setTimeout(async () => {
+                  setWasteType("heavy");
+                  setPlasterboardOption("");
+                  setSelectedPlasterboardButton("");
+                  setSelectedSkip(null);
+                  setBookingSuccess(false);
 
-                await fetchSkips(postcode, true);
-                setStep(3);
+                  await postWasteType({
+                    heavyWaste: true,
+                    plasterboard: false,
+                    plasterboardOption: null,
+                  });
+
+                  await fetchSkips(postcode, true);
+                  setStep(3);
+                }, 120);
               }}
             >
               Heavy
             </button>
 
             <button
+              style={primaryButtonStyle(selectedWasteButton === "Plasterboard")}
               onClick={() => {
+                setSelectedWasteButton("Plasterboard");
                 setWasteType("plasterboard");
                 setPlasterboardOption("");
+                setSelectedPlasterboardButton("");
                 setSelectedSkip(null);
                 setBookingSuccess(false);
               }}
@@ -314,17 +458,52 @@ export default function App() {
           </div>
 
           {wasteType === "plasterboard" && (
-            <div style={{ marginTop: "20px" }}>
-              <h4>Select plasterboard handling option</h4>
+            <div style={{ marginTop: "22px" }}>
+              <h4
+                style={{ marginTop: 0, marginBottom: "14px", fontSize: "18px" }}
+              >
+                Select plasterboard handling option
+              </h4>
 
-              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                <button onClick={() => setPlasterboardOption("bagged")}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "14px",
+                  flexWrap: "wrap",
+                  marginBottom: "14px",
+                }}
+              >
+                <button
+                  style={primaryButtonStyle(
+                    selectedPlasterboardButton === "bagged",
+                  )}
+                  onClick={() => {
+                    setPlasterboardOption("bagged");
+                    setSelectedPlasterboardButton("bagged");
+                  }}
+                >
                   Bagged
                 </button>
-                <button onClick={() => setPlasterboardOption("sheeted")}>
+                <button
+                  style={primaryButtonStyle(
+                    selectedPlasterboardButton === "sheeted",
+                  )}
+                  onClick={() => {
+                    setPlasterboardOption("sheeted");
+                    setSelectedPlasterboardButton("sheeted");
+                  }}
+                >
                   Sheeted
                 </button>
-                <button onClick={() => setPlasterboardOption("mixed")}>
+                <button
+                  style={primaryButtonStyle(
+                    selectedPlasterboardButton === "mixed",
+                  )}
+                  onClick={() => {
+                    setPlasterboardOption("mixed");
+                    setSelectedPlasterboardButton("mixed");
+                  }}
+                >
                   Mixed
                 </button>
               </div>
@@ -334,6 +513,7 @@ export default function App() {
                   <p>Selected option: {plasterboardOption}</p>
 
                   <button
+                    style={primaryButtonStyle(false)}
                     onClick={async () => {
                       setSelectedSkip(null);
                       setBookingSuccess(false);
@@ -356,7 +536,16 @@ export default function App() {
           )}
 
           <div style={{ marginTop: "20px" }}>
-            <button onClick={() => setStep(1)}>Back</button>
+            <button
+              style={secondaryButtonStyle}
+              onClick={() => {
+                setSelectedWasteButton("");
+                setSelectedPlasterboardButton("");
+                setStep(1);
+              }}
+            >
+              Back
+            </button>
           </div>
         </div>
       )}
@@ -364,41 +553,55 @@ export default function App() {
       {/* STEP 3 */}
       {step === 3 && (
         <div className="card">
-          <h2>Select Skip</h2>
+          <h2 style={{ fontSize: "22px", marginTop: 0, marginBottom: "16px" }}>
+            Select Skip
+          </h2>
 
-          <div style={{ marginTop: "16px" }}>
-            {skips.map((s) => (
-              <div key={s.id || s.size} style={{ marginBottom: "10px" }}>
-                <button
-                  disabled={s.disabled}
-                  onClick={() => {
-                    setSelectedSkip(s);
-                    setBookingSuccess(false);
-                    setBookingId("");
-                  }}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "12px",
-                    opacity: s.disabled ? 0.5 : 1,
-                  }}
-                >
-                  {s.size} - £{s.price}
-                  {s.disabled && " (not allowed)"}
-                </button>
-              </div>
-            ))}
+          <div style={{ marginTop: "20px" }}>
+            {skips.map((s) => {
+              const isSelected = selectedSkip?.size === s.size;
+
+              return (
+                <div key={s.id || s.size} style={{ marginBottom: "10px" }}>
+                  <button
+                    disabled={s.disabled}
+                    onClick={() => {
+                      if (s.disabled) return;
+
+                      setSelectedSkip(s);
+                      setBookingSuccess(false);
+                      setBookingId("");
+                    }}
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      textAlign: "left",
+                      padding: "16px",
+                      borderRadius: "8px",
+                      border: isSelected ? "2px solid #333" : "1px solid #ccc",
+                      background: isSelected ? "#e7e7e7" : "#fff",
+                      opacity: s.disabled ? 0.4 : 1,
+                      color: s.disabled ? "#666" : "#111",
+                      cursor: s.disabled ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {s.size} - £{s.price}
+                    {s.disabled && " (not allowed)"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
           {selectedSkip && (
-            <div style={{ marginTop: "20px" }}>
+            <div style={reviewBoxStyle}>
               <h3>Review</h3>
               <p>
                 <b>Postcode:</b> {postcode.trim().toUpperCase()}
               </p>
               <p>
-                <b>Address:</b> {selectedAddress?.line1}, {selectedAddress?.city}
+                <b>Address:</b> {selectedAddress?.line1},{" "}
+                {selectedAddress?.city}
               </p>
               <p>
                 <b>Waste type:</b> {wasteType}
@@ -423,7 +626,19 @@ export default function App() {
                 <b>Total:</b> £{total}
               </p>
 
-              <button onClick={handleConfirmBooking} disabled={confirming}>
+              <button
+                onClick={handleConfirmBooking}
+                disabled={confirming}
+                style={{
+                  background: "#1976d2",
+                  color: "#fff",
+                  border: "none",
+                  padding: "10px 16px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  opacity: confirming ? 0.6 : 1,
+                }}
+              >
                 {confirming ? "Confirming..." : "Confirm Booking"}
               </button>
             </div>
@@ -434,19 +649,31 @@ export default function App() {
               style={{
                 marginTop: "20px",
                 padding: "16px",
-                border: "1px solid #ccc",
+                border: "1px solid #c8e6c9",
+                background: "#f1f8f4",
                 borderRadius: "8px",
               }}
             >
-              <h3>Booking confirmed successfully</h3>
-              <p>
+              <h3 style={{ color: "#2e7d32", marginBottom: "8px" }}>
+                Booking confirmed successfully
+              </h3>
+
+              <p style={{ color: "#2e7d32" }}>
                 <b>ID:</b> {bookingId}
               </p>
             </div>
           )}
 
           <div style={{ marginTop: "20px" }}>
-            <button onClick={() => setStep(2)}>Back</button>
+            <button
+              style={secondaryButtonStyle}
+              onClick={() => {
+                setBookingSuccess(false);
+                setStep(2);
+              }}
+            >
+              Back
+            </button>
           </div>
         </div>
       )}
