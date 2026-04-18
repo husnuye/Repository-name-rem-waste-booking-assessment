@@ -475,47 +475,6 @@ All test cases are documented in:
 manual-tests.md
 
 ---
-
-### Bug Reporting
-
-A total of **7 bugs** were identified during testing of the booking flow.
-
-Each bug includes:
-
-- severity  
-- priority  
-- environment  
-- reproduction steps  
-- expected vs actual behavior  
-- evidence (screenshots and video)  
-- fix description (where applicable)  
-
-Key findings include:
-
-- validation issues (invalid postcode handling)  
-- duplicate retry behavior  
-- state/branching issue (validation vs API errors)  
-- UI feedback issues (error/success visibility and selection highlight)  
-- missing price visibility  
-- missing persistent booking confirmation  
-- duplicate booking submissions (BUG-07)  
-
-Two critical issues were identified:
-
-- **BUG-03** — validation and API errors handled in the same state  
-- **BUG-07** — duplicate booking submissions were possible from a single review state (now fixed)
-
-These issues directly impact:
-
-- user flow correctness  
-- system reliability  
-- data integrity  
-
-All bugs are documented in:
-
-`bug-reports.md`
-
-
 ### Bug Reporting
 
 A total of **7 bugs** were identified during testing of the booking flow.
@@ -557,7 +516,6 @@ All bugs are documented in:
 
 All identified issues have been analysed, and fixes have been applied where applicable, with supporting evidence included.
 
----
 
 ---
 
