@@ -876,14 +876,14 @@ Key highlights include:
 A total of **7 bugs** were identified during testing, including:
 
 - critical state management issues affecting user flow (BUG-03)  
-- duplicate booking submissions impacting data integrity (BUG-07)  
+- duplicate booking submissions impacting data integrity (BUG-07 — now fixed)  
 - multiple UX and validation issues improving overall usability  
 
 All bugs are documented with **clear reproduction steps and visual evidence**, including screenshots and video.
 
 The project is supported by:
 
-- structured documentation ( UI evidence, API contract)  
+- structured documentation (UI evidence, API contract)  
 - a stable automation framework using Playwright  
 - Docker-based setup for easy execution  
 - CI pipeline for continuous validation  
