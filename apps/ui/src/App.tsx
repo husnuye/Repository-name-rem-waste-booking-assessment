@@ -84,7 +84,10 @@ export default function App() {
     outline: "none",
     fontSize: "16px",
   };
-
+  const isValidUkPostcode = (value: string) => {
+    const postcode = value.trim().toUpperCase();
+    return /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/.test(postcode);
+  };
   const lookupButtonStyle = {
     padding: "14px 20px",
     borderRadius: "10px",
@@ -109,9 +112,29 @@ export default function App() {
     const normalizedPostcode = postcode.trim().toUpperCase();
 
     setSubmitted(false);
-    setLoading(true);
     setError("");
     setManualSuccess("");
+
+    // ✅ 1. Empty validation
+    if (!normalizedPostcode) {
+      setError("Please enter a postcode");
+      setSubmitted(true);
+      return;
+    }
+
+    // ✅ 2. Format validation
+    const isValidUkPostcode = (value: string) => {
+      return /^[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}$/.test(value);
+    };
+
+    if (!isValidUkPostcode(normalizedPostcode)) {
+      setError("Please enter a valid UK postcode");
+      setSubmitted(true);
+      return;
+    }
+
+    // ✅ 3. Reset + loading
+    setLoading(true);
     setAddresses([]);
     setSelectedAddress(null);
     setBookingSuccess(false);
@@ -141,7 +164,8 @@ export default function App() {
       setAddresses([...apiAddresses, ...savedManual]);
       setSubmitted(true);
     } catch {
-      setError("Something went wrong");
+      // ✅ sadece API hatası
+      setError("Temporary server error. Please retry");
       setSubmitted(true);
     } finally {
       setLoading(false);
@@ -248,7 +272,7 @@ export default function App() {
               style={{
                 marginBottom: "16px",
                 padding: "12px",
-                border: "1px solid #f1c1c0",
+                border: "1px solid #e0b0b0",
                 background: "#fff5f5",
                 borderRadius: "8px",
               }}
@@ -263,19 +287,21 @@ export default function App() {
                 {error}
               </p>
 
-              <button
-                onClick={handleLookup}
-                style={{
-                  background: "#f3f3f3",
-                  color: "#333",
-                  border: "1px solid #ccc",
-                  padding: "8px 14px",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                Retry
-              </button>
+              {error === "Something went wrong" && (
+                <button
+                  onClick={handleLookup}
+                  style={{
+                    background: "#f3f3f3",
+                    color: "#333",
+                    border: "1px solid #ccc",
+                    padding: "8px 14px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Retry
+                </button>
+              )}
             </div>
           )}
 

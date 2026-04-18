@@ -1,13 +1,27 @@
 # REM Waste Booking Flow
 
-A production-style waste booking flow built to simulate real-world user behavior, system constraints, and QA validation.
+## Quick Run (Docker)
 
-This project demonstrates:
-- end-to-end product thinking  
-- deterministic system design  
-- QA-driven development  
-- reliable automation  
-- reproducible environments  
+```bash
+docker compose up --build
+```
+
+Open:
+
+http://localhost:5173
+
+---
+
+A production-style waste booking flow demonstrating end-to-end product behaviour, QA validation, and automation.
+
+Key Highlights
+
+* 41 manual test cases
+* 7 documented bugs with evidence
+* Playwright automation
+* deterministic API design
+* Docker-based execution
+ 
 
 ---
 
@@ -198,35 +212,13 @@ This ensures:
 
 ---
 
-## 4. Tech Stack
-
-### Frontend
-- React (TypeScript)
-- Vite
-
-### Backend
-- Node.js
-- Express
-
-### Testing
-- Playwright (E2E)
-
-### DevOps
-- Docker
-- Docker Compose
-- GitHub Actions (CI)
-
-### Data
-- Deterministic in-memory fixtures
-
----
 
 ## 4. Tech Stack
 
 ### Frontend
 - React (TypeScript)
 - Vite
-- CSS (basic styling)
+- CSS (basic styling) aynı
 
 ### Backend
 - Node.js (TypeScript)
@@ -325,9 +317,11 @@ Request:
 {
   "postcode": "SW1A 1AA"
 }
+```
 
 Response:
 
+```json
 
 {
   "postcode": "SW1A 1AA",
@@ -339,6 +333,7 @@ Response:
     }
   ]
 }
+```
 
 6.2 Waste Types
 
@@ -346,17 +341,20 @@ POST /api/waste-types
 
 Request:
 
+```json
 {
   "heavyWaste": true,
   "plasterboard": false,
   "plasterboardOption": null
 }
-
+```
 Response:
 
+```json
 {
   "ok": true
 }
+```
 
 6.3 Skip Options
 
@@ -372,6 +370,7 @@ Example:
 
 Response:
 
+```json
 {
   "skips": [
     { "size": "4-yard", "price": 120, "disabled": false },
@@ -386,6 +385,8 @@ POST /api/booking/confirm
 
 Request:
 
+```json
+
 {
   "postcode": "SW1A 1AA",
   "addressId": "addr_1",
@@ -395,8 +396,12 @@ Request:
   "price": 120
 }
 
+```
 
 Response:
+
+
+```json
 
 {
   "status": "success",
@@ -441,15 +446,30 @@ Testing covers:
 
 ### Manual Testing
 
-Manual test coverage includes:
 
-- 35+ test cases  
-- 10+ negative scenarios  
-- 6+ edge cases  
-- 4+ API failure tests  
-- 4+ state transition tests  
+Manual testing was performed with a focus on real user behavior and system reliability.
 
-Detailed test cases are documented in:
+Coverage includes:
+
+
+- Total test cases: 41  
+- Functional tests: 11  
+- Negative tests: 12  
+- Edge cases: 6  
+- API tests: 4  
+- State transition tests: 5  
+- UI validation tests: 3  
+
+
+Testing focused on:
+
+- validation vs API error handling  
+- correct step transitions  
+- enforcement of business rules  
+- handling of disabled options  
+- retry and failure behavior  
+
+All test cases are documented in:
 
 manual-tests.md
 
@@ -457,19 +477,43 @@ manual-tests.md
 
 ### Bug Reporting
 
-Identified issues are documented with:
+A total of **7 bugs** were identified during testing of the booking flow.
+
+Each bug includes:
 
 - severity  
 - priority  
 - environment  
 - reproduction steps  
 - expected vs actual behavior  
+- evidence (screenshots and video)  
+- fix description (where applicable)  
 
-At least one bug covers branching or state transition logic.
+Key findings include:
 
-See:
+- validation issues (invalid postcode handling)  
+- duplicate retry behavior  
+- state/branching issue (validation vs API errors)  
+- UI feedback issues (error/success visibility and selection highlight)  
+- missing price visibility  
+- missing persistent booking confirmation  
+- duplicate booking submissions (BUG-07)  
 
-bug-reports.md
+Two critical issues were identified:
+
+- **BUG-03** — validation and API errors handled in the same state  
+- **BUG-07** — duplicate bookings allowed from a single review state  
+
+These issues directly impact:
+
+- user flow correctness  
+- system reliability  
+- data integrity  
+
+All bugs are documented in:
+
+`bug-reports.md`
+
 
 ---
 
@@ -485,7 +529,56 @@ Testing ensures:
 
 ---
 
-## 8. Automation
+## 8. UI / UX Improvements
+
+
+As part of the QA process, several usability and user experience improvements were identified and implemented.
+
+### Improvements
+
+- Added clear validation messages for invalid postcode input  
+- Removed duplicate Retry action and simplified retry behavior  
+- Improved visual feedback:
+  - error messages displayed in red  
+  - success messages displayed in green  
+- Added selection highlighting for waste type and skip options  
+- Improved price visibility in the review step  
+- Added persistent booking confirmation message  
+
+### Impact
+
+These improvements:
+
+- reduce user confusion  
+- improve clarity of system state  
+- increase user confidence during booking  
+- create a more consistent and predictable user experience  
+
+## Evidence
+
+Supporting evidence for testing, UI validation, and bug analysis is included in the following locations:
+
+- API contract and request/response structure → `docs/api-contract.md`  
+- UI / UX evidence → `docs/ui-evidence.md`  
+- Bug reports with screenshots and video → `docs/bug-reports.md`  
+- Manual test coverage → `docs/manual-tests.md`  
+- Media assets → `media/`  
+
+The `media/` folder contains:
+
+- desktop and mobile screenshots  
+- validation and API error states  
+- retry behavior  
+- disabled skip visibility  
+- price breakdown evidence  
+- booking confirmation states  
+- duplicate booking evidence (screenshots and video)  
+- Lighthouse report  
+
+All screenshots and media files are referenced directly within the documentation.
+
+
+## 9. Automation
 
 ### Overview
 
@@ -531,16 +624,18 @@ Located in:
 
 Run locally:
 
-
+```bash
 cd automation
 npm install
 npx playwright install
 npm test
+```
 
 Run with Docker:
 
+```bash
 docker compose --profile test run --rm automation
-
+```
 
 Reliability Strategy
 
@@ -608,14 +703,17 @@ This structure reflects real-world QA engineering practices, where tests must re
 
 ---
 
-## 9. Running the Project
+## 10. Running the Project
 
 ### Quick Start (Recommended)
 
 Run the full application:
 
 
+```bash
 docker compose up --build
+
+```
 
 Open:
 
@@ -623,8 +721,10 @@ http://localhost:5173
 
 Run automation:
 
+```bash
 docker compose --profile test run --rm automation
 
+```
 
 ⸻
 
@@ -632,9 +732,11 @@ Local Setup
 
 API
 
+```bash
 cd apps/api
 npm install
 npm run dev
+```
 
 Runs on:
 http://localhost:3001
@@ -643,9 +745,11 @@ http://localhost:3001
 
 UI
 
+```bash
 cd apps/ui
 npm install
 npm run dev
+```
 
 Runs on:
 http://localhost:5173
@@ -654,11 +758,12 @@ http://localhost:5173
 
 Automation
 
+```bash
 cd automation
 npm install
 npx playwright install
 npm test
-
+```
 Why Docker
 
 Docker is used to:
@@ -669,7 +774,7 @@ Docker is used to:
 
 ---
 
-## 10. CI & Engineering Decisions
+## 11. CI & Engineering Decisions
 
 ### Continuous Integration
 
@@ -735,29 +840,50 @@ This ensures:
 This repository includes all required assessment components:
 
 - README.md  
-- manual-tests.md  
-- bug-reports.md  
-- automation/  
-- apps/ui/  
+- docs/manual-tests.md  
+- docs/bug-reports.md  
+- docs/ui-evidence.md  
+- docs/api-contract.md  
+- apps/ui/ (frontend application)  
+- apps/api/ (backend API)  
+- automation/ (Playwright test suite)  
+- media/ (screenshots and video evidence)  
 - full source code  
-- Docker setup  
-- CI workflow  
-
+- Docker setup (docker-compose)  
+- CI workflow (GitHub Actions)  
 ---
 
 ## Final Summary
 
-This project demonstrates:
+This project demonstrates a complete, end-to-end waste booking flow with a strong focus on product quality, reliability, and real-world behavior.
 
-- a complete end-to-end booking flow  
-- realistic product behavior  
-- strong QA thinking  
-- deterministic system design  
-- stable automation  
-- reproducible environment  
+Key highlights include:
 
-It is designed to be:
+- a fully functional booking journey from postcode lookup to confirmation  
+- realistic system behavior including failures, retry logic, and edge cases  
+- deterministic data design for stable testing and reproducibility  
+- comprehensive QA coverage across manual and automated testing  
+- clear separation between validation, API errors, and system states  
+
+A total of **7 bugs** were identified during testing, including:
+
+- critical state management issues affecting user flow (BUG-03)  
+- duplicate booking submissions impacting data integrity (BUG-07)  
+- multiple UX and validation issues improving overall usability  
+
+All bugs are documented with **clear reproduction steps and visual evidence**, including screenshots and video.
+
+The project is supported by:
+
+- structured documentation (manual tests, bug reports, UI evidence, API contract)  
+- a stable automation framework using Playwright  
+- Docker-based setup for easy execution  
+- CI pipeline for continuous validation  
+
+Overall, the system is designed to be:
 
 - easy to run  
 - easy to test  
 - easy to evaluate  
+
+while reflecting real-world QA engineering practices and product-level thinking.

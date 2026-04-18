@@ -1,0 +1,56 @@
+## 1. Desktop View
+
+![Desktop View](./docs/evidence/desktop-view.png)
+
+Note: This screenshot shows the application in desktop view during the booking flow. The selected skip, review section, and full price breakdown are visible, confirming correct layout and usability on larger screens.
+
+
+## 2. Mobile Responsiveness
+
+![Mobile View](./docs/evidence/mobile-view.png)
+
+Note: The application layout adapts correctly to smaller screen sizes. The booking flow remains usable, with selected skip, review details, and price breakdown clearly visible.
+
+
+## 3. Error and Retry State
+
+![Error State](./docs/evidence/error-retry.png)
+
+Note: This screenshot shows the API error state triggered by a failing postcode. Retry is handled via the existing Lookup action, ensuring a consistent and simplified user experience.
+
+
+## 4. Disabled Skip Visibility
+
+![Disabled Skips](./docs/evidence/disabled-skip.png)
+
+Note: Certain skip options are disabled based on waste type selection (e.g. heavy waste). Disabled options are clearly marked and cannot be selected, ensuring correct enforcement of business rules.
+
+
+## 5. Price Breakdown
+
+![Price Breakdown](./docs/evidence/desktop-view.png)
+
+Note: The review section clearly displays base price, VAT, and total amount before booking confirmation, ensuring full transparency for the user.
+
+
+## 6. Flow Video
+
+A short video demonstrating the full booking flow is included.
+
+The video covers:
+
+- postcode lookup  
+- address selection  
+- waste type selection  
+- skip selection  
+- price breakdown  
+- booking confirmation  
+- success state with booking ID  
+
+File: flow-video.mp4
+
+## 7. Lighthouse / Accessibility
+
+![Lighthouse Report](./docs/evidence/lighthouse.png)
+
+Note: Lighthouse was used to validate performance and accessibility. The application achieved high scores, indicating good UI quality and usability.
